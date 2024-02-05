@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <RootNamespace>Pentadome.TypeSharp.Sample</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Pentadome.TypeSharp.Attributes\Pentadome.TypeSharp.Attributes.csproj" />
+        <ProjectReference Include="..\Pentadome.TypeSharp\Pentadome.TypeSharp.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="DDD.UbiquitousLanguageRegistry.txt"/>
+    </ItemGroup>
+</Project>

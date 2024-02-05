@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentadome.TypeSharp", "src\Pentadome.TypeSharp\Pentadome.TypeSharp.csproj", "{8ED8832F-38D4-4EB7-BF0D-8547495EDB94}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentadome.TypeSharp.Sample", "src\Pentadome.TypeSharp.Sample\Pentadome.TypeSharp.Sample.csproj", "{B66010F8-8FFB-4C54-B11C-8FF4C0BE02B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentadome.TypeSharp.Tests", "tests\Pentadome.TypeSharp.Tests\Pentadome.TypeSharp.Tests.csproj", "{B51852C0-02C6-4C22-A5B4-BB29BEA24AB0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Pentadome.TypeSharp.Attributes", "src\Pentadome.TypeSharp.Attributes\Pentadome.TypeSharp.Attributes.csproj", "{446C6B80-647E-4AF2-BB28-16BF2093CFF7}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionFiles", "SolutionFiles", "{2873DF90-9078-4676-B012-D56A947894D5}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8ED8832F-38D4-4EB7-BF0D-8547495EDB94}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ED8832F-38D4-4EB7-BF0D-8547495EDB94}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ED8832F-38D4-4EB7-BF0D-8547495EDB94}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ED8832F-38D4-4EB7-BF0D-8547495EDB94}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B66010F8-8FFB-4C54-B11C-8FF4C0BE02B9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B66010F8-8FFB-4C54-B11C-8FF4C0BE02B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B66010F8-8FFB-4C54-B11C-8FF4C0BE02B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B66010F8-8FFB-4C54-B11C-8FF4C0BE02B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B51852C0-02C6-4C22-A5B4-BB29BEA24AB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B51852C0-02C6-4C22-A5B4-BB29BEA24AB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B51852C0-02C6-4C22-A5B4-BB29BEA24AB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B51852C0-02C6-4C22-A5B4-BB29BEA24AB0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{446C6B80-647E-4AF2-BB28-16BF2093CFF7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{446C6B80-647E-4AF2-BB28-16BF2093CFF7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{446C6B80-647E-4AF2-BB28-16BF2093CFF7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{446C6B80-647E-4AF2-BB28-16BF2093CFF7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

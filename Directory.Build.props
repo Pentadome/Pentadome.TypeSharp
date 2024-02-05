@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!--This file get merged with all .csproj files in this directory and its children.-->
+	<PropertyGroup>
+		<LangVersion>Latest</LangVersion>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<AnalysisMode>Recommended</AnalysisMode>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<PackageReference Include="JetBrains.Annotations" />
+	</ItemGroup>
+	
+	
+	<PropertyGroup>
+		<!-- When building a .csproj file, it may fail to determine the SolutionDir -->
+		<SolutionDir Condition=" '$(SolutionDir)' == '' ">..\..\</SolutionDir>
+	</PropertyGroup>
+</Project>

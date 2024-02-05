@@ -1,0 +1,50 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+
+        <RootNamespace>Pentadome.TypeSharp</RootNamespace>
+        <PackageId>Pentadome.TypeSharp</PackageId>
+
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces"  />
+        <PackageReference Include="Roslynator.CSharp.Workspaces" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Pentadome.TypeSharp.Attributes\Pentadome.TypeSharp.Attributes.csproj"  PrivateAssets="All" />
+    </ItemGroup>
+
+    <!-- See: https://andrewlock.net/creating-a-source-generator-part-8-solving-the-source-generator-marker-attribute-problem-part2/#4-pack-the-dll-into-the-generator-package -->
+    <ItemGroup>
+        <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
+        <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+        <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
+        <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+
+        <!-- Pack the attributes dll in the lib\netstandard2.0 path -->
+        <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
+    </ItemGroup>
+
+
+    <!-- set HUSKY to 0 in CI/CD disable this -->
+    <Target Name="husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
+        <Exec Command="dotnet tool restore"  StandardOutputImportance="Low" StandardErrorImportance="High"/>
+        <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High"
+        <!-- update this to be the root of your solution -->
+        WorkingDirectory="../../" />
+    </Target>
+</Project>
