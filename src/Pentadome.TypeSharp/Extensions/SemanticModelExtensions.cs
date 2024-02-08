@@ -33,19 +33,19 @@ internal static class SemanticModelExtensions
     }
 
     private static ArrayValue<T?>[] GetConstantArray<T>(
-        SemanticModel @this,
-        CollectionExpressionSyntax arrayExpression
+        SemanticModel semanticModel,
+        CollectionExpressionSyntax collectionExpression
     )
     {
-        var values = new ArrayValue<T?>[arrayExpression.Elements.Count];
-        for (var index = 0; index < arrayExpression.Elements.Count; index++)
+        var values = new ArrayValue<T?>[collectionExpression.Elements.Count];
+        for (var index = 0; index < collectionExpression.Elements.Count; index++)
         {
-            var element = arrayExpression.Elements[index];
+            var element = collectionExpression.Elements[index];
             if (element is not ExpressionElementSyntax expressionElementSyntax)
                 throw new NotSupportedException();
 
             values[index] = new ArrayValue<T?>(
-                @this.GetConstantOrDefault<T>(expressionElementSyntax.Expression),
+                semanticModel.GetConstantOrDefault<T>(expressionElementSyntax.Expression),
                 expressionElementSyntax.Expression.GetLocation()
             );
         }
@@ -54,33 +54,29 @@ internal static class SemanticModelExtensions
     }
 
     private static ArrayValue<T?>[] GetConstantArray<T>(
-        SemanticModel @this,
+        SemanticModel semanticModel,
         ArrayCreationExpressionSyntax arrayCreationExpression
     )
     {
-        var valueExpressions = arrayCreationExpression.Initializer?.Expressions;
-        if (!valueExpressions.HasValue || valueExpressions.Value.Count == 0)
-            return [];
-
-        var values = new ArrayValue<T?>[valueExpressions.Value.Count];
-        for (var index = 0; index < valueExpressions.Value.Count; index++)
-        {
-            var valueExpression = valueExpressions.Value[index];
-            values[index] = new ArrayValue<T?>(
-                @this.GetConstantOrDefault<T>(valueExpression),
-                valueExpression.GetLocation()
-            );
-        }
-
-        return values;
+        var initializer = arrayCreationExpression.Initializer;
+        return GetConstantArray<T>(semanticModel, initializer);
     }
 
     private static ArrayValue<T?>[] GetConstantArray<T>(
-        SemanticModel @this,
+        SemanticModel semanticModel,
         ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpression
     )
     {
-        var valueExpressions = implicitArrayCreationExpression.Initializer?.Expressions;
+        var initializer = implicitArrayCreationExpression.Initializer;
+        return GetConstantArray<T>(semanticModel, initializer);
+    }
+
+    private static ArrayValue<T?>[] GetConstantArray<T>(
+        SemanticModel semanticModel,
+        InitializerExpressionSyntax? initializer
+    )
+    {
+        var valueExpressions = initializer?.Expressions;
         if (!valueExpressions.HasValue || valueExpressions.Value.Count == 0)
             return [];
 
@@ -89,7 +85,7 @@ internal static class SemanticModelExtensions
         {
             var valueExpression = valueExpressions.Value[index];
             values[index] = new ArrayValue<T?>(
-                @this.GetConstantOrDefault<T>(valueExpression),
+                semanticModel.GetConstantOrDefault<T>(valueExpression),
                 valueExpression.GetLocation()
             );
         }
