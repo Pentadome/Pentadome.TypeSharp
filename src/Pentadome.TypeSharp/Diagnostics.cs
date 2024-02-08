@@ -8,7 +8,7 @@ internal static class Diagnostics
         new(
             "TS1001",
             "Exclude argument should be name of a property",
-            "The exclude argument \"{0}\" is not a property of \"{1}\"",
+            "The exclude argument \"{0}\" is not a property of \"{1}\" and will be ignored",
             "Pentadome.TypeSharp",
             DiagnosticSeverity.Warning,
             true

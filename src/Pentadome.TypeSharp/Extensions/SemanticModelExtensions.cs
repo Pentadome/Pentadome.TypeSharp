@@ -6,19 +6,33 @@ namespace Pentadome.TypeSharp.Extensions;
 
 internal static class SemanticModelExtensions
 {
+    internal static T? GetConstantOrDefault<T>(
+        this SemanticModel @this,
+        ExpressionSyntax expression
+    )
+    {
+        var constantValue = @this.GetConstantValue(expression);
+        return constantValue.HasValue ? (T?)constantValue.Value : default;
+    }
+
     internal static ArrayValue<T?>[] GetConstantArray<T>(
         this SemanticModel @this,
         ExpressionSyntax arrayExpression
     )
     {
-        if (arrayExpression is CollectionExpressionSyntax collectionExpressionSyntax)
+        return arrayExpression switch
         {
-            return GetFromCollectionExpressionSyntax<T>(@this, collectionExpressionSyntax);
-        }
-        throw new NotImplementedException();
+            CollectionExpressionSyntax collectionExpressionSyntax
+                => GetConstantArray<T>(@this, collectionExpressionSyntax),
+            ArrayCreationExpressionSyntax arrayCreationExpressionSyntax
+                => GetConstantArray<T>(@this, arrayCreationExpressionSyntax),
+            ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpressionSyntax
+                => GetConstantArray<T>(@this, implicitArrayCreationExpressionSyntax),
+            _ => throw new NotSupportedException()
+        };
     }
 
-    private static ArrayValue<T?>[] GetFromCollectionExpressionSyntax<T>(
+    private static ArrayValue<T?>[] GetConstantArray<T>(
         SemanticModel @this,
         CollectionExpressionSyntax arrayExpression
     )
@@ -27,18 +41,57 @@ internal static class SemanticModelExtensions
         for (var index = 0; index < arrayExpression.Elements.Count; index++)
         {
             var element = arrayExpression.Elements[index];
-            if (element is ExpressionElementSyntax expressionElementSyntax)
-            {
-                var rawValue = @this.GetConstantValue(expressionElementSyntax.Expression);
-                var value = rawValue is { HasValue: true, Value: T } ? (T)rawValue.Value : default;
-                values[index] = new ArrayValue<T?>(
-                    value,
-                    expressionElementSyntax.Expression.GetLocation()
-                );
-                continue;
-            }
+            if (element is not ExpressionElementSyntax expressionElementSyntax)
+                throw new NotSupportedException();
 
-            throw new NotImplementedException();
+            values[index] = new ArrayValue<T?>(
+                @this.GetConstantOrDefault<T>(expressionElementSyntax.Expression),
+                expressionElementSyntax.Expression.GetLocation()
+            );
+        }
+
+        return values;
+    }
+
+    private static ArrayValue<T?>[] GetConstantArray<T>(
+        SemanticModel @this,
+        ArrayCreationExpressionSyntax arrayCreationExpression
+    )
+    {
+        var valueExpressions = arrayCreationExpression.Initializer?.Expressions;
+        if (!valueExpressions.HasValue || valueExpressions.Value.Count == 0)
+            return [];
+
+        var values = new ArrayValue<T?>[valueExpressions.Value.Count];
+        for (var index = 0; index < valueExpressions.Value.Count; index++)
+        {
+            var valueExpression = valueExpressions.Value[index];
+            values[index] = new ArrayValue<T?>(
+                @this.GetConstantOrDefault<T>(valueExpression),
+                valueExpression.GetLocation()
+            );
+        }
+
+        return values;
+    }
+
+    private static ArrayValue<T?>[] GetConstantArray<T>(
+        SemanticModel @this,
+        ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpression
+    )
+    {
+        var valueExpressions = implicitArrayCreationExpression.Initializer?.Expressions;
+        if (!valueExpressions.HasValue || valueExpressions.Value.Count == 0)
+            return [];
+
+        var values = new ArrayValue<T?>[valueExpressions.Value.Count];
+        for (var index = 0; index < valueExpressions.Value.Count; index++)
+        {
+            var valueExpression = valueExpressions.Value[index];
+            values[index] = new ArrayValue<T?>(
+                @this.GetConstantOrDefault<T>(valueExpression),
+                valueExpression.GetLocation()
+            );
         }
 
         return values;
