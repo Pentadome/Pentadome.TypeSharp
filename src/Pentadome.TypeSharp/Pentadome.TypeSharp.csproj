@@ -24,10 +24,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Pentadome.TypeSharp.Attributes\Pentadome.TypeSharp.Attributes.csproj"  PrivateAssets="All" />
-    </ItemGroup>
+      <!-- Because of the way the solution is build and despite the project having a reference to the attributes project,
+           we can only use compile time constants like nameof(...) or constant variables. The attributes assembly is not accessible during runtime. -->
+    <ProjectReference Include="..\Pentadome.TypeSharp.Attributes\Pentadome.TypeSharp.Attributes.csproj"  PrivateAssets="All" />
+  </ItemGroup>
 
-    <!-- See: https://andrewlock.net/creating-a-source-generator-part-8-solving-the-source-generator-marker-attribute-problem-part2/#4-pack-the-dll-into-the-generator-package -->
+  <!-- See: https://andrewlock.net/creating-a-source-generator-part-8-solving-the-source-generator-marker-attribute-problem-part2/#4-pack-the-dll-into-the-generator-package -->
     <ItemGroup>
         <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />

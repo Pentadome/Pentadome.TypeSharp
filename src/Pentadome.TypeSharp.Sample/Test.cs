@@ -8,4 +8,9 @@ using Pentadome.TypeSharp.Sample;
 
 [assembly: GenerateKeyMapOf<Test2>(Name = "Test2OrderBy", NameSpace = "MyNameSpace")]
 
-[assembly: GenerateKeyMapOf<Test2>(Name = "Test2WithoutAgeKeyMa", Exclude = [nameof(Test2.Age)])]
+[assembly: GenerateKeyMapOf<Test2>(Name = "Test2WithoutAgeKeyMap", Exclude = [nameof(Test2.Age)])]
+
+[assembly: GenerateKeyMapOf<Test2>(
+    Name = "Test2WithInvalidExcludeArgKeyMap",
+    Exclude = ["Something"]
+)]

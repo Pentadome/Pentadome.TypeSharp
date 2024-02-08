@@ -15,7 +15,7 @@ internal static class GenerateKeyMapOfT
 
     public static void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Filter classes annotated with the [Report] attribute. Only filtered Syntax Nodes can trigger code generation.
+        // Get attributes that target assembly.
         var provider = context
             .SyntaxProvider.CreateSyntaxProvider(
                 (s, _) =>
@@ -23,9 +23,8 @@ internal static class GenerateKeyMapOfT
                     && x.Target?.Identifier.IsKind(SyntaxKind.AssemblyKeyword) == true,
                 GetGenerateKeyOfAttributeSyntaxes
             )
-            .SelectMany((x, _) => x);
+            .Flatten();
 
-        // Generate the source code.
         context.RegisterSourceOutput(
             context.CompilationProvider.Combine(provider.Collect()),
             (ctx, t) => GenerateCode(ctx, t.Left, t.Right)
@@ -58,42 +57,55 @@ internal static class GenerateKeyMapOfT
     {
         foreach (var attributeSyntax in attributeSyntaxes)
         {
-            var semanticModel = compilation.GetSemanticModel(attributeSyntax.SyntaxTree);
-
-            var typeArgument = GetTypeArgument(attributeSyntax);
-
-            if (typeArgument is null)
-                continue;
-
-            if (semanticModel.GetSymbolInfo(typeArgument).Symbol is not INamedTypeSymbol mappedType)
-                continue;
-
-            var exclude = KeyMapShared.GetExcludeArgument(semanticModel, attributeSyntax);
-
-            var enums = KeyMapShared.GetEnumValuesDeclaration(mappedType, exclude);
-
-            var keyMapName =
-                KeyMapShared.GetKeyMapNameArgument(semanticModel, attributeSyntax)
-                ?? $"{mappedType.Name}{KeyMapShared._defaultSuffix}";
-
-            var keyMapNameSpace =
-                KeyMapShared.GetKeyMapNameSpaceArgument(semanticModel, attributeSyntax)
-                ?? semanticModel.Compilation.AssemblyName!;
-
-            var code = $$"""
-namespace {{keyMapNameSpace}}
-{
-    public enum {{keyMapName}}
-    {
-        {{enums}}
-    }
-}
-""";
-            context.AddUniqueCsharpSource(
-                $"{keyMapNameSpace.Replace('.', '/')}/{keyMapName}",
-                SourceText.From(code, Encoding.UTF8)
-            );
+            GenerateCode(context, compilation, attributeSyntax);
         }
+    }
+
+    private static void GenerateCode(
+        SourceProductionContext context,
+        Compilation compilation,
+        AttributeSyntax attributeSyntax
+    )
+    {
+        var semanticModel = compilation.GetSemanticModel(attributeSyntax.SyntaxTree);
+
+        var typeArgument = GetTypeArgument(attributeSyntax);
+
+        if (typeArgument is null)
+            return;
+
+        if (semanticModel.GetSymbolInfo(typeArgument).Symbol is not INamedTypeSymbol mappedType)
+            return;
+
+        var enums = KeyMapShared.GetEnumValuesWithoutExcludesDeclaration(
+            context,
+            semanticModel,
+            attributeSyntax,
+            mappedType
+        );
+
+        var keyMapName =
+            KeyMapShared.GetKeyMapNameArgument(semanticModel, attributeSyntax)
+            ?? $"{mappedType.Name}{KeyMapShared._defaultSuffix}";
+
+        var keyMapNameSpace =
+            KeyMapShared.GetKeyMapNameSpaceArgument(semanticModel, attributeSyntax)
+            ?? semanticModel.Compilation.AssemblyName!;
+
+        var code = $$"""
+            namespace {{keyMapNameSpace}}
+            {
+                public enum {{keyMapName}}
+                {
+                    {{enums}}
+                }
+            }
+            """;
+
+        context.AddUniqueCsharpSource(
+            $"{keyMapNameSpace.Replace('.', '/')}/{keyMapName}",
+            SourceText.From(code, Encoding.UTF8)
+        );
     }
 
     private static TypeSyntax? GetTypeArgument(AttributeSyntax attributeSyntax)
