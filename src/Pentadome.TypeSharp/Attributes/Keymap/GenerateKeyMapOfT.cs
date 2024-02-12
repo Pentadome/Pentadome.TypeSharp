@@ -5,6 +5,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Text;
 using Pentadome.TypeSharp.Extensions;
+using Pentadome.TypeSharp.Helpers;
 
 namespace Pentadome.TypeSharp.Attributes.Keymap;
 
@@ -77,7 +78,7 @@ internal static class GenerateKeyMapOfT
         if (semanticModel.GetSymbolInfo(typeArgument).Symbol is not INamedTypeSymbol mappedType)
             return;
 
-        var enums = KeyMapShared.GetEnumValuesWithoutExcludesDeclaration(
+        var enumValues = KeyMapShared.GetMappedProperties(
             context,
             semanticModel,
             attributeSyntax,
@@ -98,15 +99,15 @@ internal static class GenerateKeyMapOfT
             mappedType
         );
 
-        var code = $$"""
-            namespace {{keyMapNameSpace}}
-            {
-                {{accessibility}} enum {{keyMapName}}
-                {
-                    {{enums}}
-                }
-            }
-            """;
+        var keyMapKind = KeyMapShared.GetKeyMapKind(semanticModel, attributeSyntax);
+
+        var code = EnumGenerator.GenerateEnum(
+            keyMapNameSpace,
+            keyMapName,
+            accessibility,
+            enumValues,
+            keyMapKind == (int)GeneratedKeyMapKind.FlagEnum
+        );
 
         context.AddUniqueCsharpSource(
             $"{keyMapNameSpace.Replace('.', '/')}/{keyMapName}",

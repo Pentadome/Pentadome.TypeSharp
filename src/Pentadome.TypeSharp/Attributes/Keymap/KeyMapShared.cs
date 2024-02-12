@@ -52,7 +52,7 @@ internal static class KeyMapShared
         return (string?)constantValue.Value;
     }
 
-    internal static string GetEnumValuesWithoutExcludesDeclaration(
+    internal static List<string> GetMappedProperties(
         SourceProductionContext context,
         SemanticModel semanticModel,
         AttributeSyntax attributeSyntax,
@@ -62,34 +62,37 @@ internal static class KeyMapShared
         var properties = mappedType
             .GetMembers()
             .OfType<IPropertySymbol>()
-            .Where(x => x.DeclaredAccessibility == Accessibility.Public)
+            .Where(x => x.DeclaredAccessibility == Accessibility.Public && !x.IsStatic)
             .Select(x => x.Name)
-            .ToArray();
+            .ToList();
 
         var excludes = GetExcludeArgument(semanticModel, attributeSyntax);
 
-        ValidateExcludes(context, mappedType.ToDisplayString(), properties, excludes);
-
-        var enums = string.Join(",\n        ", properties.Except(excludes.Select(x => x.Value)));
-        return enums;
+        RemoveExcludesFromPropertyList(properties, excludes, context, mappedType.ToDisplayString());
+        return properties;
     }
 
-    private static void ValidateExcludes(
+    /// <summary>
+    /// Also reports diagnostics if <paramref name="excludes"/> contains a string not in <paramref name="properties"/>.
+    /// </summary>
+    private static void RemoveExcludesFromPropertyList(
+        List<string> properties,
+        IEnumerable<ArrayValue<string?>> excludes,
         SourceProductionContext context,
-        string typeName,
-        string[] properties,
-        ArrayValue<string?>[] excludes
+        string typeName
     )
     {
-        var invalidExcludes = excludes.Where(x => !properties.Contains(x.Value)).ToArray();
-
-        foreach (var invalidExclude in invalidExcludes)
+        foreach (var exclude in excludes)
         {
+            if (properties.Remove(exclude.Value!))
+                continue;
+
+            // if Remove returned false, it was not a property of the type.
             context.ReportDiagnostic(
                 Diagnostic.Create(
                     Diagnostics._keyMapOfAttributeExcludeArgumentIsNotAnProperty,
-                    invalidExclude.Location,
-                    invalidExclude.Value,
+                    exclude.Location,
+                    exclude.Value,
                     typeName
                 )
             );
@@ -139,5 +142,16 @@ internal static class KeyMapShared
                     $"unexpected value for {nameof(accessibility)}: {accessibility}"
                 )
         };
+    }
+
+    internal static int GetKeyMapKind(SemanticModel semanticModel, AttributeSyntax attributeSyntax)
+    {
+        var kindArgument = attributeSyntax.ArgumentList?.Arguments.FirstOrDefault(x =>
+            x.NameEquals?.Name.Identifier.ValueText == nameof(GenerateKeyMapOfAttribute.Kind)
+        );
+
+        return kindArgument is null
+            ? (int)GeneratedKeyMapKind.Enum
+            : semanticModel.GetConstantOrDefault<int>(kindArgument.Expression);
     }
 }

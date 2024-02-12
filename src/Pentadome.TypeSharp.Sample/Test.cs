@@ -19,18 +19,27 @@ using Pentadome.TypeSharp.Sample;
 [assembly: GenerateKeyMapOf<Test2>(
     Name = "Test2WithoutAgeKeyMap",
     // testing CollectionExpressionSyntax
-    Exclude = [nameof(Test2.Age)]
+    Exclude = [nameof(Test2.Age)],
+    // testing GeneratedKeyMapAccessibility.Target
+    Accessibility = GeneratedKeyMapAccessibility.Target,
+    // testing GeneratedKeyMapKind.Enum
+    Kind = GeneratedKeyMapKind.Enum
 )]
 
 [assembly: GenerateKeyMapOf<Test2>(
     Name = "Test2WithoutAgeKeyMap2",
     // testing ImplicitArrayCreationExpressionSyntax
-    Exclude = new[] { nameof(Test2.Age) }
+    Exclude = new[] { nameof(Test2.Age) },
+    // testing GeneratedKeyMapAccessibility.Internal
+    Accessibility = GeneratedKeyMapAccessibility.Internal,
+    // testing GeneratedKeyMapKind.FlagEnum
+    Kind = GeneratedKeyMapKind.FlagEnum
 )]
 
 [assembly: GenerateKeyMapOf<Test2>(
     Name = "Test2WithoutAgeKeyMap3",
     // testing ArrayCreationExpressionSyntax
     Exclude = new String[] { nameof(Test2.Age) },
+    // testing GeneratedKeyMapAccessibility.Public
     Accessibility = GeneratedKeyMapAccessibility.Public
 )]

@@ -18,4 +18,6 @@ public sealed class GenerateKeyMapOfAttribute<[UsedImplicitly] T> : Attribute
     }
 
     public GeneratedKeyMapAccessibility Accessibility { get; set; }
+
+    public GeneratedKeyMapKind Kind { get; set; }
 }
