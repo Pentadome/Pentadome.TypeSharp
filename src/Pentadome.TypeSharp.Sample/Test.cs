@@ -1,4 +1,7 @@
-﻿using Pentadome.TypeSharp;
+﻿#pragma warning disable
+#pragma warning restore TS1001
+// Resharper disable All
+using Pentadome.TypeSharp;
 using Pentadome.TypeSharp.Sample;
 
 // [assembly: TypeSharp.GenerateKeyMapOf(typeof(test2))]
@@ -28,5 +31,6 @@ using Pentadome.TypeSharp.Sample;
 [assembly: GenerateKeyMapOf<Test2>(
     Name = "Test2WithoutAgeKeyMap3",
     // testing ArrayCreationExpressionSyntax
-    Exclude = new String[] { nameof(Test2.Age) }
+    Exclude = new String[] { nameof(Test2.Age) },
+    Accessibility = GeneratedKeyMapAccessibility.Public
 )]

@@ -2,7 +2,7 @@
 
 namespace Pentadome.TypeSharp.Extensions;
 
-internal static class IncrementalValueProviderExtensions
+internal static class IncrementalValuesProviderExtensions
 {
     internal static IncrementalValuesProvider<T> Flatten<T>(
         this IncrementalValuesProvider<IEnumerable<T>> @this

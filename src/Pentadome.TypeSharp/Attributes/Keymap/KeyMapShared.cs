@@ -8,6 +8,7 @@ namespace Pentadome.TypeSharp.Attributes.Keymap;
 internal static class KeyMapShared
 {
     internal const string _defaultSuffix = "KeyMap";
+    internal const string _generatedKeyMapAccessibility = "GeneratedKeyMapAccessibility";
 
     internal static string? GetKeyMapNameArgument(
         SemanticModel semanticModel,
@@ -107,5 +108,36 @@ internal static class KeyMapShared
         return excludeArgument is null
             ? []
             : semanticModel.GetConstantArray<string>(excludeArgument.Expression);
+    }
+
+    internal static string GetAccessibility(
+        SemanticModel semanticModel,
+        AttributeSyntax attributeSyntax,
+        ISymbol mappedType
+    )
+    {
+        var accessibilityArgument = attributeSyntax.ArgumentList?.Arguments.FirstOrDefault(x =>
+            x.NameEquals?.Name.Identifier.ValueText
+            == nameof(GenerateKeyMapOfAttribute.Accessibility)
+        );
+
+        var accessibility = accessibilityArgument is null
+            ? 0
+            : semanticModel.GetConstantOrDefault<int>(accessibilityArgument.Expression);
+
+        return accessibility switch
+        {
+            // convert the enums to int during compile time.
+            (int)GeneratedKeyMapAccessibility.Target
+                => mappedType.DeclaredAccessibility == Accessibility.Internal
+                    ? "internal"
+                    : "public",
+            (int)GeneratedKeyMapAccessibility.Internal => "internal",
+            (int)GeneratedKeyMapAccessibility.Public => "public",
+            _
+                => throw new InvalidOperationException(
+                    $"unexpected value for {nameof(accessibility)}: {accessibility}"
+                )
+        };
     }
 }

@@ -16,11 +16,4 @@ public sealed class GenerateKeyMapOfAttribute : Attribute
     }
 
     public GeneratedKeyMapAccessibility Accessibility { get; set; }
-
-    public enum GeneratedKeyMapAccessibility
-    {
-        Target,
-        Public,
-        Internal
-    }
 }

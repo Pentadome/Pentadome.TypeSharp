@@ -24,11 +24,14 @@ internal static class SemanticModelExtensions
         {
             CollectionExpressionSyntax collectionExpressionSyntax
                 => GetConstantArray<T>(@this, collectionExpressionSyntax),
+
             ArrayCreationExpressionSyntax arrayCreationExpressionSyntax
-                => GetConstantArray<T>(@this, arrayCreationExpressionSyntax),
+                => GetConstantArray<T>(@this, arrayCreationExpressionSyntax.Initializer),
+
             ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpressionSyntax
-                => GetConstantArray<T>(@this, implicitArrayCreationExpressionSyntax),
-            _ => throw new NotSupportedException()
+                => GetConstantArray<T>(@this, implicitArrayCreationExpressionSyntax.Initializer),
+
+            _ => throw new NotImplementedException(arrayExpression.GetType().FullName)
         };
     }
 
@@ -42,7 +45,7 @@ internal static class SemanticModelExtensions
         {
             var element = collectionExpression.Elements[index];
             if (element is not ExpressionElementSyntax expressionElementSyntax)
-                throw new NotSupportedException();
+                throw new NotImplementedException(element.GetType().FullName);
 
             values[index] = new ArrayValue<T?>(
                 semanticModel.GetConstantOrDefault<T>(expressionElementSyntax.Expression),
@@ -51,24 +54,6 @@ internal static class SemanticModelExtensions
         }
 
         return values;
-    }
-
-    private static ArrayValue<T?>[] GetConstantArray<T>(
-        SemanticModel semanticModel,
-        ArrayCreationExpressionSyntax arrayCreationExpression
-    )
-    {
-        var initializer = arrayCreationExpression.Initializer;
-        return GetConstantArray<T>(semanticModel, initializer);
-    }
-
-    private static ArrayValue<T?>[] GetConstantArray<T>(
-        SemanticModel semanticModel,
-        ImplicitArrayCreationExpressionSyntax implicitArrayCreationExpression
-    )
-    {
-        var initializer = implicitArrayCreationExpression.Initializer;
-        return GetConstantArray<T>(semanticModel, initializer);
     }
 
     private static ArrayValue<T?>[] GetConstantArray<T>(

@@ -92,10 +92,16 @@ internal static class GenerateKeyMapOfT
             KeyMapShared.GetKeyMapNameSpaceArgument(semanticModel, attributeSyntax)
             ?? semanticModel.Compilation.AssemblyName!;
 
+        var accessibility = KeyMapShared.GetAccessibility(
+            semanticModel,
+            attributeSyntax,
+            mappedType
+        );
+
         var code = $$"""
             namespace {{keyMapNameSpace}}
             {
-                public enum {{keyMapName}}
+                {{accessibility}} enum {{keyMapName}}
                 {
                     {{enums}}
                 }

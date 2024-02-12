@@ -17,5 +17,5 @@ public sealed class GenerateKeyMapOfAttribute<[UsedImplicitly] T> : Attribute
         set => _exclude = value;
     }
 
-    public GenerateKeyMapOfAttribute.GeneratedKeyMapAccessibility Accessibility { get; set; }
+    public GeneratedKeyMapAccessibility Accessibility { get; set; }
 }
