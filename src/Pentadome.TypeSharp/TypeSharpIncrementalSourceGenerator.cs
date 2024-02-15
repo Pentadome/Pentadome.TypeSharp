@@ -1,6 +1,4 @@
-using System.Diagnostics;
 using Microsoft.CodeAnalysis;
-using Pentadome.TypeSharp.Attributes;
 using Pentadome.TypeSharp.Attributes.Keymap;
 
 namespace Pentadome.TypeSharp;

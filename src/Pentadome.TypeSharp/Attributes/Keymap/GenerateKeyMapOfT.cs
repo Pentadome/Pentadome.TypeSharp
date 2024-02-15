@@ -12,7 +12,7 @@ namespace Pentadome.TypeSharp.Attributes.Keymap;
 internal static class GenerateKeyMapOfT
 {
     private const string _generateKeyMapOfAttributeT =
-        $"{Constants.AssemblyName}.GenerateKeyMapOfAttribute<T>";
+        $"{Constants._assemblyName}.GenerateKeyMapOfAttribute<T>";
 
     public static void Initialize(IncrementalGeneratorInitializationContext context)
     {
