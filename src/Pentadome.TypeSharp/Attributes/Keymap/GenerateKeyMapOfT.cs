@@ -100,13 +100,15 @@ internal static class GenerateKeyMapOfT
         );
 
         var keyMapKind = KeyMapShared.GetKeyMapKind(semanticModel, attributeSyntax);
+        var isFlagEnum = keyMapKind == (int)GeneratedKeyMapKind.FlagEnum;
 
         var code = EnumGenerator.GenerateEnum(
             keyMapNameSpace,
             keyMapName,
             accessibility,
-            enumValues,
-            keyMapKind == (int)GeneratedKeyMapKind.FlagEnum
+            KeyMapShared.GenerateEnumValueComments(mappedType.ToDisplayString(), enumValues),
+            isFlagEnum,
+            KeyMapShared.GenerateKeyMapComment(mappedType.ToDisplayString(), isFlagEnum)
         );
 
         context.AddUniqueCsharpSource(

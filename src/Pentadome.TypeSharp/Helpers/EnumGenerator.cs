@@ -1,4 +1,6 @@
-﻿namespace Pentadome.TypeSharp.Helpers;
+﻿using Pentadome.TypeSharp.Models;
+
+namespace Pentadome.TypeSharp.Helpers;
 
 internal static class EnumGenerator
 {
@@ -6,8 +8,9 @@ internal static class EnumGenerator
         string nameSpace,
         string name,
         string accessibility,
-        IReadOnlyList<string> enumValues,
-        bool isFlagEnum
+        IReadOnlyList<EnumValueDeclaration> enumValues,
+        bool isFlagEnum,
+        string? comment = null
     )
     {
         // todo: Use ThreadLocal<IndentedStringBuilder> for re-use?
@@ -16,6 +19,9 @@ internal static class EnumGenerator
 
         using (_ = stringBuilder.Indent())
         {
+            if (comment is not null)
+                _ = stringBuilder.AppendLine(comment);
+
             if (isFlagEnum)
                 _ = stringBuilder.AppendLine("[global::System.Flags]");
 
@@ -41,25 +47,32 @@ internal static class EnumGenerator
 
     private static void AppendEnumValues(
         IndentedStringBuilder stringBuilder,
-        IReadOnlyList<string> values
+        IReadOnlyList<EnumValueDeclaration> values
     )
     {
-        foreach (var value in values)
+        foreach (var (value, comment) in values)
         {
+            if (comment is not null)
+                _ = stringBuilder.AppendLine(comment);
+
             _ = stringBuilder.Append(value).AppendLine(",");
         }
     }
 
     private static void AppendFlagEnumValues(
         IndentedStringBuilder stringBuilder,
-        IReadOnlyList<string> values
+        IReadOnlyList<EnumValueDeclaration> values
     )
     {
         _ = stringBuilder.AppendLine("None = 0,");
 
         for (var i = 0; i < values.Count; i++)
         {
-            var value = values[i];
+            var (value, comment) = values[i];
+
+            if (comment is not null)
+                _ = stringBuilder.AppendLine(comment);
+
             _ = stringBuilder.Append(value).Append(" = 1 << ").Append(i).AppendLine(",");
         }
 

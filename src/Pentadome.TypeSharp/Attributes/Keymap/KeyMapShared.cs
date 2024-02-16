@@ -154,4 +154,37 @@ internal static class KeyMapShared
             ? (int)GeneratedKeyMapKind.Enum
             : semanticModel.GetConstantOrDefault<int>(kindArgument.Expression);
     }
+
+    internal static IReadOnlyList<EnumValueDeclaration> GenerateEnumValueComments(
+        string mappedTypeFullName,
+        IReadOnlyList<string> mappedProperties
+    )
+    {
+        var enumValueDeclarations = new EnumValueDeclaration[mappedProperties.Count];
+
+        for (var i = 0; i < mappedProperties.Count; i++)
+        {
+            var cref = $"{mappedTypeFullName}.{mappedProperties[i]}";
+            var comment = $"""
+                /// <summary>
+                ///   Represents the property <see cref="{cref}"/>
+                ///   
+                ///   <inheritdoc cref="{cref}"/>
+                /// </summary>
+                """;
+
+            enumValueDeclarations[i] = new(mappedProperties[i], comment);
+        }
+
+        return enumValueDeclarations;
+    }
+
+    internal static string GenerateKeyMapComment(string mappedTypeFullName, bool isFlagEnum)
+    {
+        return $"""
+            /// <summary>
+            ///   Represents a keymap for <see cref="{mappedTypeFullName}" />.
+            ///   {(isFlagEnum ? "This enum consists of flags.\n/// </summary>" : "</summary>")}
+            """;
+    }
 }
