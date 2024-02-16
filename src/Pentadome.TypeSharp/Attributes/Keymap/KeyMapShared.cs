@@ -166,11 +166,8 @@ internal static class KeyMapShared
         {
             var cref = $"{mappedTypeFullName}.{mappedProperties[i]}";
             var comment = $"""
-                /// <summary>
-                ///   Represents the property <see cref="{cref}"/>
-                ///   
-                ///   <inheritdoc cref="{cref}"/>
-                /// </summary>
+                Represents the property <see cref="{cref}"/>
+                <inheritdoc cref="{cref}"/>
                 """;
 
             enumValueDeclarations[i] = new(mappedProperties[i], comment);
@@ -179,12 +176,10 @@ internal static class KeyMapShared
         return enumValueDeclarations;
     }
 
-    internal static string GenerateKeyMapComment(string mappedTypeFullName, bool isFlagEnum)
+    internal static string GenerateKeyMapComment(string mappedTypeFullName)
     {
         return $"""
-            /// <summary>
-            ///   Represents a keymap for <see cref="{mappedTypeFullName}" />.
-            ///   {(isFlagEnum ? "This enum consists of flags.\n/// </summary>" : "</summary>")}
+            Represents a keymap for <see cref="{mappedTypeFullName}" />.
             """;
     }
 }

@@ -10,10 +10,15 @@
         <RootNamespace>Pentadome.TypeSharp</RootNamespace>
         <PackageId>Pentadome.TypeSharp</PackageId>
 
-        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild> <!-- Generates a package at build -->
+        <IncludeBuildOutput>false</IncludeBuildOutput> <!-- Do not include the generator as a lib dependency -->
     </PropertyGroup>
 
     <ItemGroup>
+        <!-- See: https://github.com/dotnet/roslyn/blob/main/docs/features/source-generators.cookbook.md#use-functionality-from-nuget-packages
+         Take a private dependency on CSharpier.Core (PrivateAssets=all) Consumers of this generator will not reference it.
+         Set GeneratePathProperty=true so we can reference the binaries via the PKGCSharpier_Core property-->
+        <PackageReference Include="CSharpier.Core" PrivateAssets="all" GeneratePathProperty="true" />
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -38,6 +43,8 @@
         <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
+        <None Include="$(PkgCSharpier_Core)\lib\netstandard2.0\CSharpier.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
+        
         <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
@@ -50,5 +57,17 @@
     <Target Name="husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
         <Exec Command="dotnet tool restore"  StandardOutputImportance="Low" StandardErrorImportance="High"/>
         <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High"  WorkingDirectory="$(SolutionDir)" />
+       
+    </Target>
+
+    <PropertyGroup>
+        <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
+    </PropertyGroup>
+
+    <Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
+        <Exec Command="echo $(ResolvedCompileFileDefinitions)" StandardOutputImportance="High"/>
+        <ItemGroup>
+            <TargetPathWithTargetPlatformMoniker Include="$(PkgCSharpier_Core)\lib\netstandard2.0\CSharpier.dll" IncludeRuntimeDependency="false" />
+        </ItemGroup>
     </Target>
 </Project>

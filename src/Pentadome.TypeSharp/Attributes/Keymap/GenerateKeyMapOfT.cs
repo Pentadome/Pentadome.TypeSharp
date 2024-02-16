@@ -108,7 +108,7 @@ internal static class GenerateKeyMapOfT
             accessibility,
             KeyMapShared.GenerateEnumValueComments(mappedType.ToDisplayString(), enumValues),
             isFlagEnum,
-            KeyMapShared.GenerateKeyMapComment(mappedType.ToDisplayString(), isFlagEnum)
+            KeyMapShared.GenerateKeyMapComment(mappedType.ToDisplayString())
         );
 
         context.AddUniqueCsharpSource(
