@@ -88,13 +88,10 @@ internal static class KeyMapShared
                 continue;
 
             // if Remove returned false, it was not a property of the type.
-            context.ReportDiagnostic(
-                Diagnostic.Create(
-                    Diagnostics._keyMapOfAttributeExcludeArgumentIsNotAnProperty,
-                    exclude.Location,
-                    exclude.Value,
-                    typeName
-                )
+            context.ReportKeyMapOfAttributeExcludeArgumentIsNotAnProperty(
+                exclude.Location,
+                exclude.Value!,
+                typeName
             );
         }
     }
@@ -166,8 +163,8 @@ internal static class KeyMapShared
         {
             var cref = $"{mappedTypeFullName}.{mappedProperties[i]}";
             var comment = $"""
-                Represents the property <see cref="{cref}"/>
-                <inheritdoc cref="{cref}"/>
+                Represents the property <see cref="{cref}"/><br/>
+                <inheritdoc cref="{cref}" path="/summary"/>
                 """;
 
             enumValueDeclarations[i] = new(mappedProperties[i], comment);

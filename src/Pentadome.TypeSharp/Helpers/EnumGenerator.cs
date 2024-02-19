@@ -9,7 +9,7 @@ internal static class EnumGenerator
         string name,
         string accessibility,
         IReadOnlyList<EnumValueDeclaration> enumValues,
-        bool isFlagEnum,
+        bool isFlagEnum = false,
         string? comment = null
     )
     {

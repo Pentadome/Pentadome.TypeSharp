@@ -42,14 +42,12 @@
     <ItemGroup>
         <!-- Pack the generator dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-
-        <None Include="$(PkgCSharpier_Core)\lib\netstandard2.0\CSharpier.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" CopyToPublishDirectory="Always" CopyToOutputDirectory="Always" />
         
         <!-- Pack the attributes dll in the analyzers/dotnet/cs path -->
         <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
 
         <!-- Pack the attributes dll in the lib\netstandard2.0 path -->
-        <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="true" />
+        <None Include="$(OutputPath)\Pentadome.TypeSharp.Attributes.dll" Pack="true" PackagePath="lib\netstandard2.0" Visible="false" />
     </ItemGroup>
 
 
@@ -57,15 +55,14 @@
     <Target Name="husky" BeforeTargets="Restore;CollectPackageReferences" Condition="'$(HUSKY)' != 0">
         <Exec Command="dotnet tool restore"  StandardOutputImportance="Low" StandardErrorImportance="High"/>
         <Exec Command="dotnet husky install" StandardOutputImportance="Low" StandardErrorImportance="High"  WorkingDirectory="$(SolutionDir)" />
-       
     </Target>
 
+	<!-- See: https://github.com/dotnet/roslyn/issues/52017#issuecomment-842747598 -->
     <PropertyGroup>
         <GetTargetPathDependsOn>$(GetTargetPathDependsOn);GetDependencyTargetPaths</GetTargetPathDependsOn>
     </PropertyGroup>
 
     <Target Name="GetDependencyTargetPaths" AfterTargets="ResolvePackageDependenciesForBuild">
-        <Exec Command="echo $(ResolvedCompileFileDefinitions)" StandardOutputImportance="High"/>
         <ItemGroup>
             <TargetPathWithTargetPlatformMoniker Include="$(PkgCSharpier_Core)\lib\netstandard2.0\CSharpier.dll" IncludeRuntimeDependency="false" />
         </ItemGroup>

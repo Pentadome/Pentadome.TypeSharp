@@ -5,7 +5,7 @@ namespace Pentadome.TypeSharp.Helpers;
 
 internal sealed class SimpleAutoFormattingSyntaxBuilder
 {
-    private readonly StringBuilder _stringBuilder = new();
+    private readonly StringBuilder _stringBuilder = new("// Formatted by CSharpier\n\n\n");
 
     public SimpleAutoFormattingSyntaxBuilder NameSpaceBracketOpenLine(string nameSpaceName)
     {
